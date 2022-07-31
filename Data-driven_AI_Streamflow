@@ -1,0 +1,27 @@
+#Load data table package
+library(data.table)
+
+#Set directory to the location of the input data
+setwd("{path to your data input")
+
+#Read streamflow data
+Annual_Flow <- data.frame(read.csv("Monthly_Stf.csv"))
+
+#Select 3 months antecedent of Sep, to Nov for training, and Dec as target  
+Flow_3Antecedent <- data.frame(Annual_Flow[1:108,13],Annual_Flow[1:108,10:12])
+colnames(Flow_3Antecedent) <- c('Dec','Sep','Oct','Nov')
+
+#Select 11 months antecedent of Jan, to Nov for training, and Dec as target
+Flow_11Antecedent <- data.frame(Annual_Flow[1:108,13],Annual_Flow[1:108,2:12])
+colnames(Flow_11Antecedent) <- c('Dec','Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov')
+
+#Load neuralnet package
+require(neuralnet)
+
+#Train ANN with 3 months antecedent, two hidden layer each 5 neuron
+MyANN_Fit_3Antecedent <-lapply(1:108, function (x) neuralnet(Flow_3Antecedent[x,], data=Flow_3Antecedent[x,], hidden=c(5,5),act.fct = "tanh",
+                      linear.output = TRUE, stepmax = 1000000))
+
+#Train ANN with 11 months antecedent, two hidden layer each 5 neuron
+MyANN_Fit_11Antecedent <-lapply(1:108, function(x) neuralnet(Flow_11Antecedent[x,], data=Flow_11Antecedent[x,], hidden=c(5,5),act.fct = "tanh",
+                                  linear.output = TRUE, stepmax = 1000000))
