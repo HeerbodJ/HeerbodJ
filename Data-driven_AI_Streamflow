@@ -48,9 +48,6 @@ Train_11Ant <- neuralnetwork(Train_11Ant_Data[,2:12],Train_3Ant_Data[,1], hidden
 #Plot training and validation
 plot(Train_11Ant)
 
-#Selecting 20% of data of testing
-j=seq(61,108,2)
-
 #validate 20% of data
 Validate_11Ant <- predict(Train_11Ant,Inflows[j,2:12])
 
