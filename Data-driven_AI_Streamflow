@@ -30,3 +30,35 @@ Validate_3Ant <- predict(Train_3Ant,Inflows[j,10:12])
 #Plot predicted vs observed
 plot(Validate_3Ant[["predictions"]],Inflows[j,13])
 abline(lm(Validate_3Ant[["predictions"]]~Inflows[j,13]), col='red')
+
+#Test 2021 data
+Test_3Ant <- predict(Train_3Ant,Inflows[109,10:12])
+
+Dec2021_3Ant <- Test_3Ant[["predictions"]]
+
+#Select 11 months antecedent of Jan, to Nov for training, and Dec as target
+Train_11Ant_Data <- data.frame(Inflows[i,13],Inflows[i,2:12])
+colnames(Train_11Ant_Data) <- c('Dec','Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov')
+
+
+#Train ANN with 11 months antecedent, two hidden layer each 10 neuron and tanh as the differentiable function
+Train_11Ant <- neuralnetwork(Train_11Ant_Data[,2:12],Train_3Ant_Data[,1], hidden.layers = c(10,10),regression=TRUE, 
+                            activ.functions = "tanh", loss.type = 'squared')
+
+#Plot training and validation
+plot(Train_11Ant)
+
+#Selecting 20% of data of testing
+j=seq(61,108,2)
+
+#validate 20% of data
+Validate_11Ant <- predict(Train_11Ant,Inflows[j,2:12])
+
+#Plot predicted vs observed
+plot(Validate_11Ant[["predictions"]],Inflows[j,13])
+abline(lm(Validate_11Ant[["predictions"]]~Inflows[j,13]), col='red')
+
+#Test 2021 data
+Test_11Ant <- predict(Train_11Ant,Inflows[109,2:12])
+
+Dec2021_11Ant <- Test_11Ant[["predictions"]]
