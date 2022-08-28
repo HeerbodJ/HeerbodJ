@@ -10,9 +10,22 @@ Inflows <- data.frame(read.csv("Monthly_Stf.csv"))
 #Selecting 80% of data for calibration
 i=c((1:59),seq(60,108,2))
 
+#Selecting 20% of data of testing
+j=seq(61,108,2)
+
 #Select 3 months antecedent of Sep, to Nov for training, and Dec as target  
 Train_3Ant_Data <- data.frame(Inflows[i,13],Inflows[i,10:12])
 colnames(Train_3Ant_Data) <- c('Dec','Sep','Oct','Nov')
+
+#Select 11 months antecedent of Jan, to Nov for training, and Dec as target
+Train_11Ant_Data <- data.frame(Inflows[i,13],Inflows[i,2:12])
+colnames(Train_11Ant_Data) <- c('Dec','Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov')
+
+
+### ANN
+#Load neuralnet package
+require(neuralnet)
+
 
 #Train ANN with 3 months antecedent, two hidden layer each 10 neuron and tanh as the differentiable function
 Train_3Ant <- neuralnetwork(Train_3Ant_Data[,2:4],Train_3Ant_Data[,1], hidden.layers = c(10,10),regression=TRUE, 
@@ -20,9 +33,6 @@ Train_3Ant <- neuralnetwork(Train_3Ant_Data[,2:4],Train_3Ant_Data[,1], hidden.la
 
 #Plot training and validation
 plot(Train_3Ant)
-
-#Selecting 20% of data of testing
-j=seq(61,108,2)
 
 #validate 20% of data
 Validate_3Ant <- predict(Train_3Ant,Inflows[j,10:12])
@@ -36,14 +46,9 @@ Test_3Ant <- predict(Train_3Ant,Inflows[109,10:12])
 
 Dec2021_3Ant <- Test_3Ant[["predictions"]]
 
-#Select 11 months antecedent of Jan, to Nov for training, and Dec as target
-Train_11Ant_Data <- data.frame(Inflows[i,13],Inflows[i,2:12])
-colnames(Train_11Ant_Data) <- c('Dec','Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov')
-
-
 #Train ANN with 11 months antecedent, two hidden layer each 10 neuron and tanh as the differentiable function
 Train_11Ant <- neuralnetwork(Train_11Ant_Data[,2:12],Train_3Ant_Data[,1], hidden.layers = c(10,10),regression=TRUE, 
-                            activ.functions = "tanh", loss.type = 'squared')
+                             activ.functions = "tanh", loss.type = 'squared')
 
 #Plot training and validation
 plot(Train_11Ant)
@@ -60,3 +65,18 @@ Test_11Ant <- predict(Train_11Ant,Inflows[109,2:12])
 
 #Result 2021 data
 Dec2021_11Ant <- Test_11Ant[["predictions"]]
+
+### SVM
+
+# Load the SVM library
+library(e1071)
+
+# Train SVM model with 80% of data
+Train_SVM_3Ant <-svm(Train_3Ant_Data[,2:4],Train_3Ant_Data[,1]) 
+
+#test the trained data
+test_trasined_SVM_3ant <- predict(Train_SVM_3Ant,Train_3Ant_Data[,2:4])
+
+#Plot the predict vs actual 
+plot(Train_3Ant_Data[,1], test_trasined_SVM_3ant, xlab = 'Actual', ylab='Trained')
+abline(lm(Train_3Ant_Data[,1]~test_trasined_SVM_3ant))
