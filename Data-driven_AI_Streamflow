@@ -78,5 +78,5 @@ Train_SVM_3Ant <-svm(Train_3Ant_Data[,2:4],Train_3Ant_Data[,1])
 test_trasined_SVM_3ant <- predict(Train_SVM_3Ant,Train_3Ant_Data[,2:4])
 
 #Plot the predict vs actual 
-plot(Train_3Ant_Data[,1], test_trasined_SVM_3ant, xlab = 'Actual', ylab='Trained')
-abline(lm(Train_3Ant_Data[,1]~test_trasined_SVM_3ant))
+plot(Train_3Ant_Data[,1], test_trained_SVM_3ant, xlab = 'Actual', ylab='Trained')
+abline(lm(Train_3Ant_Data[,1]~test_trained_SVM_3ant))
