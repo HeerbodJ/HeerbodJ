@@ -75,8 +75,52 @@ library(e1071)
 Train_SVM_3Ant <-svm(Train_3Ant_Data[,2:4],Train_3Ant_Data[,1]) 
 
 #test the trained data
-test_trasined_SVM_3ant <- predict(Train_SVM_3Ant,Train_3Ant_Data[,2:4])
+test_trained_SVM_3ant <- predict(Train_SVM_3Ant,Train_3Ant_Data[,2:4])
+
+#linear regression of model data vs actual
+lm_Train_3Ant <-lm(Train_3Ant_Data[,1]~test_trained_SVM_3ant)
 
 #Plot the predict vs actual 
-plot(Train_3Ant_Data[,1], test_trained_SVM_3ant, xlab = 'Actual', ylab='Trained')
-abline(lm(Train_3Ant_Data[,1]~test_trained_SVM_3ant))
+plot(Train_3Ant_Data[c(1:21,23:39,41:84),1], test_trained_SVM_3ant[c(1:21,23:39,41:84)], 
+     xlab = 'Actual Inflows (ML)', ylab='Trained Inflows (ML)')
+abline(lm_Train_3Ant)
+
+# measuring the performance
+RMSE <- function(error)
+{
+  sqrt(mean(error^2))
+}
+
+error <- lm_Train_3Ant$residuals
+RMSE <- RMSE(error)
+
+
+Tune_SVM_3Ant <-tune(svm,Train_3Ant_Data[,2:4],Train_3Ant_Data[,1],
+                     ranges = list(epsilon = seq(0,0.1,0.001), cost = 2^(2:9)))
+
+tuned_SVM_3Ant <- Tune_SVM_3Ant$best.model
+
+test_tuned_SVM_3ant <- predict(tuned_SVM_3Ant,Train_3Ant_Data[,2:4])
+
+error <- Train_3Ant_Data[,1] - test_tuned_SVM_3ant
+
+#Plot the predict vs actual 
+plot(Train_3Ant_Data[,1] , test_tuned_SVM_3ant, 
+     xlab = 'Actual Inflows (ML)', ylab='Trained Inflows (ML)')
+abline(lm(Train_3Ant_Data[,1] ~ test_tuned_SVM_3ant))
+
+
+#tuning with removed outline
+Tune_SVM_3Ant <-tune(svm,Train_3Ant_Data[,2:4],Train_3Ant_Data[,1],
+                     ranges = list(epsilon = seq(0,0.1,0.001), cost = 2^(2:9)))
+
+tuned_SVM_3Ant <- Tune_SVM_3Ant$best.model
+
+test_tuned_SVM_3ant <- predict(tuned_SVM_3Ant,Train_3Ant_Data[,2:4])
+
+error <- Train_3Ant_Data[,1] - test_tuned_SVM_3ant
+
+#Plot the predict vs actual 
+plot(Train_3Ant_Data[,1] , test_tuned_SVM_3ant, 
+     xlab = 'Actual Inflows (ML)', ylab='Trained Inflows (ML)')
+abline(lm(Train_3Ant_Data[,1] ~ test_tuned_SVM_3ant))
