@@ -1,6 +1,7 @@
 - 👋 Hi, I’m @Heerbod
 - 👀 I’m interested in data-driven artificial intelligence for hydrological/environmental modelling
-- 🌱 This R code provides a simple example of how to use machine learning for forecasting. 
+- 🌱 This R code provides a simple example of how to use machine learning for forecasting.
+- The code is self-explanatory with text before each line of the code.
 
 <!---
 HeerbodJ/HeerbodJ is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
